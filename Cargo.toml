@@ -1,0 +1,9 @@
+[package]
+name = "rfx"
+version = "0.1.0"
+authors = ["Shady Khalifa <shekohex@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+serde_json = "1.0.37"
+json-color = "0.7.0"

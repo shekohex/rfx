@@ -1,0 +1,12 @@
+{
+  "empty_array": [],
+  "array_with_numbers": [1, 2, 3],
+  "array_with_strings": ["one", "two", "three"],
+  "another_object": {
+    "key": "value"
+  },
+  "string": "test",
+  "number": 123,
+  "boolean": true,
+  "float": 123.456
+}
