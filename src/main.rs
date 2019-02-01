@@ -1,27 +1,32 @@
 use json_color::{Color, Colorizer};
-use std::io;
-use std::io::Read;
-
+use std::{fs::File, io};
 fn main() -> Result<(), ExitDisplay<io::Error>> {
-  let stdin = io::stdin();
-  let stdout = io::stdout();
-  let mut stdin_handle = stdin.lock();
-  let mut buffer = String::new();
+  let args: Vec<_> = std::env::args().skip(1).collect();
+  if !args.is_empty() {
+    let file = File::open(&args[0])?;
+    process_input(file)?
+  } else {
+    let stdin = io::stdin();
+    let stdin_handle = stdin.lock();
+    process_input(stdin_handle)?
+  }
+  Ok(())
+}
+
+fn process_input(mut f: impl io::Read) -> Result<(), ExitDisplay<io::Error>> {
   let colorizer = Colorizer::new()
-    .escape_sequence(Color::Purple)
-    .null(Color::Cyan)
-    .boolean(Color::Yellow)
-    .number(Color::Magenta)
+    .escape_sequence(Color::Yellow)
+    .null(Color::Red)
+    .boolean(Color::Cyan)
+    .number(Color::Yellow)
     .string(Color::Green)
-    .key(Color::Blue)
+    .key(Color::Purple)
     .build();
-  stdin_handle.read_to_string(&mut buffer)?;
-  let json: serde_json::Value = serde_json::from_str(&buffer)
-    .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
-  let mut stdout_handle = stdout.lock();
-  buffer = serde_json::to_string_pretty(&json)
-    .map_err(|e| io::Error::new(io::ErrorKind::Interrupted, e))?;
-  colorizer.colorize_to_writer(&buffer, &mut stdout_handle)?;
+  let mut json = String::new();
+  f.read_to_string(&mut json)?;
+  let stdout = io::stdout();
+  let mut stdout = stdout.lock();
+  colorizer.colorize_to_writer(&json, &mut stdout)?;
   Ok(())
 }
 
@@ -33,7 +38,5 @@ impl<E: std::fmt::Display> std::fmt::Debug for ExitDisplay<E> {
 }
 
 impl<E: std::fmt::Display> From<E> for ExitDisplay<E> {
-  fn from(e: E) -> Self {
-    ExitDisplay(e)
-  }
+  fn from(e: E) -> Self { ExitDisplay(e) }
 }

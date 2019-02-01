@@ -6,6 +6,8 @@
     "key": "value"
   },
   "string": "test",
+  "string_escaped": "test\nand test",
+  "nullable": null,
   "number": 123,
   "boolean": true,
   "float": 123.456
